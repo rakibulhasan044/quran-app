@@ -44,13 +44,13 @@ export function SurahList({ selected, onSelect }: SurahListProps) {
                 : "hover:bg-gray-50 dark:hover:bg-neutral-800"
               }`}
           >
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold flex-shrink-0
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg font-semibold flex-shrink-0
               ${selected === c.id
                 ? "bg-green-600 text-white"
                 : "bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300"
               }`}
             >
-              {/* {c.id} */}
+              {c.id}
             </div>
             <div className="flex-1 min-w-0">
               <p className={`text-sm font-semibold truncate ${selected === c.id ? "text-green-700 dark:text-green-400" : "text-gray-800 dark:text-gray-200"}`}>
