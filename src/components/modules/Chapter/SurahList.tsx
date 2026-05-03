@@ -50,7 +50,7 @@ export function SurahList({ selected, onSelect }: SurahListProps) {
                 : "bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300"
               }`}
             >
-              {c.id}
+              {/* {c.id} */}
             </div>
             <div className="flex-1 min-w-0">
               <p className={`text-sm font-semibold truncate ${selected === c.id ? "text-green-700 dark:text-green-400" : "text-gray-800 dark:text-gray-200"}`}>
