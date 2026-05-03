@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Search, Moon, Sun } from "lucide-react";
-import { useState } from "react";
+import { useDarkMode } from "@/hooks/useDarkMode";
 
 import {
   NavigationMenu,
@@ -12,16 +12,11 @@ import {
 } from "@/components/ui/navigation-menu";
 
 export function Navbar() {
-  const [dark, setDark] = useState(false);
-
-  const toggleTheme = () => {
-    setDark(!dark);
-    document.documentElement.classList.toggle("dark");
-  };
+  const { dark, toggle } = useDarkMode();
 
   return (
     <div className="w-full border-b px-4 py-3 flex items-center justify-between">
-      
+
       {/* Left: Logo */}
       <Link href="/" className="text-lg font-semibold">
         Quran Mazid
@@ -47,7 +42,7 @@ export function Navbar() {
             <NavigationMenuLink
               render={
                 <button
-                  onClick={toggleTheme}
+                  onClick={toggle}
                   className="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-800"
                 >
                   {dark ? (
@@ -64,7 +59,7 @@ export function Navbar() {
           <NavigationMenuItem>
             <NavigationMenuLink
               render={
-                <button className="px-4 py-2 rounded-md bg-black text-white dark:bg-white dark:text-black text-sm font-medium">
+                <button className="px-4 py-2 rounded-md text-white bg-green-800 text-sm font-medium">
                   Support Us
                 </button>
               }

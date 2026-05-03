@@ -1,3 +1,4 @@
+import { ToggleOptions } from "@/components/modules/Chapter/ToggleOptions";
 import { Navbar } from "@/components/shared/Navbar";
 import SideNavbar from "@/components/shared/SideNavbar";
 
@@ -12,7 +13,9 @@ export default function Home() {
           <Navbar />
         </div>
         <div className="grid grid-cols-5 h-full">
-          <div className="col-span-1 text-center border">left</div>
+          <div className="col-span-1 w-full border">
+            <ToggleOptions />
+          </div>
           <div className="col-span-3 text-center border">middle</div>
           <div className="col-span-1 text-center border">right</div>
         </div>

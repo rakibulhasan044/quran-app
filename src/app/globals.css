@@ -123,8 +123,9 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-inter), sans-serif;
   }
-  html {
+  /* html {
     @apply font-sans;
-  }
+  } */
 }
