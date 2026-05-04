@@ -1,6 +1,6 @@
 // app/page.tsx
 "use client";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Navbar } from "@/components/shared/Navbar";
 import SideNavbar from "@/components/shared/SideNavbar";
 import { ToggleOptions } from "@/components/modules/Chapter/ToggleOptions";
@@ -12,8 +12,9 @@ type Mode = "Surah" | "Juz" | "Page";
 export default function Home() {
   const [mode, setMode] = useState<Mode>("Surah");
   const [selectedSurah, setSelectedSurah] = useState(1);
-  const [selectedJuz, setSelectedJuz]     = useState(1);
-  const [selectedPage, setSelectedPage]   = useState(1);
+  const [selectedJuz, setSelectedJuz] = useState(1);
+  const [selectedPage, setSelectedPage] = useState(1);
+  const [scrollToSurahId, setScrollToSurahId] = useState<number | null>(null);
 
   const currentId =
     mode === "Surah" ? selectedSurah :
@@ -31,19 +32,21 @@ export default function Home() {
     if (mode === "Page")  setSelectedPage((p)  => Math.min(604, p + 1));
   };
 
+  const handleScrollToSurah = useCallback((surahId: number) => {
+    setScrollToSurahId(surahId);
+    // Clear after a tick so it can re-trigger if clicked again
+    setTimeout(() => setScrollToSurahId(null), 500);
+  }, []);
+
   return (
     <div className="flex w-full h-screen overflow-hidden">
-      {/* Side icon nav */}
       <div className="w-15 flex items-center justify-center flex-shrink-0">
         <SideNavbar />
       </div>
 
-      {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <Navbar />
-
         <div className="grid grid-cols-5 flex-1 overflow-hidden">
-          {/* Left panel — col 1 */}
           <div className="col-span-1 border-r dark:border-neutral-800 overflow-hidden flex flex-col">
             <ToggleOptions
               mode={mode}
@@ -54,23 +57,22 @@ export default function Home() {
               onSurahSelect={setSelectedSurah}
               onJuzSelect={setSelectedJuz}
               onPageSelect={setSelectedPage}
+              onScrollToSurah={handleScrollToSurah}
             />
           </div>
 
-          {/* Middle reading — col 3 */}
           <div className="col-span-3 border-r dark:border-neutral-800 overflow-hidden flex flex-col">
             <ReadingPanel
               mode={mode}
               id={currentId}
               onPrev={handlePrev}
               onNext={handleNext}
+              scrollToSurahId={scrollToSurahId}
             />
           </div>
 
-          {/* Right panel — col 1 */}
           <div className="col-span-1 overflow-hidden flex flex-col">
             {/* <RightPanel /> */}
-            jjj
           </div>
         </div>
       </div>

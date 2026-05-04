@@ -1,8 +1,9 @@
+// components/modules/Chapter/ReadingPanel.tsx
 "use client";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useQuranData } from "@/hooks/useQuranData";
 import { useChapters } from "@/hooks/useQuranMeta";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import type { Word } from "@/types/quran";
 
@@ -13,6 +14,7 @@ interface ReadingPanelProps {
   id: number;
   onPrev: () => void;
   onNext: () => void;
+  scrollToSurahId?: number | null;
 }
 
 function toArabicIndic(n: number): string {
@@ -22,11 +24,11 @@ function toArabicIndic(n: number): string {
 function AyahEndMark({ number }: { number: number }) {
   return (
     <span className="inline-flex items-center justify-center mx-1 select-none align-middle relative">
-      <span style={{ fontSize: "32px", lineHeight: "3rem", color: "#16a34a" }}>
+      <span style={{ fontSize: "24px", lineHeight: "3rem", color: "#428039" }}>
         ۝
       </span>
       <span
-        className="absolute inset-0 flex items-center justify-center text-green-700 dark:text-green-400"
+        className="absolute inset-0 flex items-center justify-center text-green-700 dark:text-green-500"
         style={{ fontSize: "11px", fontWeight: 700, marginTop: "1px" }}
       >
         {toArabicIndic(number)}
@@ -66,12 +68,67 @@ function PageSeparator({
   );
 }
 
+function SurahHeader({
+  chapterId,
+  chapters,
+}: {
+  chapterId: number;
+  chapters: ReturnType<typeof useChapters>["chapters"];
+}) {
+  const chapter = chapters.find((c) => c.id === chapterId);
+  if (!chapter) return null;
+
+  const isMakkah = chapter.revelation_place?.toLowerCase() === "makkah";
+  const revelationPlace = isMakkah ? "Makkah" : "Madinah";
+
+  return (
+    <div className="relative flex flex-col items-center w-full max-w-2xl mb-4 mt-6">
+      {/* City image */}
+      <div className="absolute left-0 top-0 w-28 h-28 opacity-60 dark:opacity-50 flex-shrink-0">
+        <Image
+          src={
+            isMakkah
+              ? "/assets/images/makkah.webp"
+              : "/assets/images/madinah.webp"
+          }
+          alt={revelationPlace}
+          width={112}
+          height={112}
+          className="object-contain brightness-110 contrast-110 dark:brightness-200 dark:contrast-125 dark:invert"
+        />
+      </div>
+
+      {/* Title */}
+      <div className="flex flex-col items-center gap-1 w-full">
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 tracking-wide">
+          Surah {chapter.name_simple}
+        </h1>
+        <p className="text-sm text-gray-400 dark:text-gray-500">
+          Ayah {String(chapter.verses_count).padStart(2, "0")} · {revelationPlace}
+        </p>
+
+        {/* Bismillah — skip for Al-Fatihah (1) and At-Tawbah (9) */}
+        {chapterId !== 1 && chapterId !== 9 && (
+          <div className="mt-4">
+            <Image
+              src="/assets/svg/bismillah.svg"
+              alt="Bismillah"
+              width={220}
+              height={52}
+              className="opacity-75 dark:opacity-60 dark:invert"
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function WordChip({ word }: { word: Word }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [hovering, setHovering] = useState(false);
 
-  const isWord = word.char_type_name === "word";
-  const tooltipText = word.translation?.text;
+  if (word.char_type_name !== "word") return null;
 
   const playAudio = () => {
     if (!word.audio_url) return;
@@ -89,13 +146,11 @@ function WordChip({ word }: { word: Word }) {
     }
   };
 
-  if (!isWord) return null;
-
   return (
     <span className="relative inline-flex flex-col items-center">
-      {hovering && tooltipText && (
+      {hovering && word.translation?.text && (
         <span className="absolute -top-10 left-1/2 -translate-x-1/2 z-50 whitespace-nowrap bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs px-2 py-1 rounded-lg shadow-lg pointer-events-none">
-          {tooltipText}
+          {word.translation.text}
           <span className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-900 dark:border-t-gray-100" />
         </span>
       )}
@@ -112,22 +167,31 @@ function WordChip({ word }: { word: Word }) {
   );
 }
 
-export function ReadingPanel({ mode, id, onPrev, onNext }: ReadingPanelProps) {
+export function ReadingPanel({
+  mode,
+  id,
+  onPrev,
+  onNext,
+  scrollToSurahId,
+}: ReadingPanelProps) {
   const { verses, loading, error } = useQuranData(mode, id);
   const { chapters } = useChapters();
-
-  const firstVerse = verses[0];
-  const chapterId = firstVerse
-    ? Number(firstVerse.verse_key.split(":")[0])
-    : null;
-  const chapter = chapters.find((c) => c.id === chapterId);
-
-  const surahName = chapter?.name_simple ?? "—";
-  const isMakkah = chapter?.revelation_place?.toLowerCase() === "makkah";
-  const ayahCount = chapter?.verses_count;
-  const revelationPlace = isMakkah ? "Makkah" : "Madinah";
   const maxId = mode === "Surah" ? 114 : mode === "Juz" ? 30 : 604;
 
+  // Refs for each surah boundary — used for scroll-to-surah from JuzList
+  const surahRefs = useRef<Record<number, HTMLDivElement | null>>({});
+
+  // Scroll to surah when triggered from JuzList dropdown
+  useEffect(() => {
+    if (scrollToSurahId && surahRefs.current[scrollToSurahId]) {
+      surahRefs.current[scrollToSurahId]?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [scrollToSurahId]);
+
+  // Group verses by page
   const pages: {
     pageNumber: number;
     juzNumber: number;
@@ -140,107 +204,101 @@ export function ReadingPanel({ mode, id, onPrev, onNext }: ReadingPanelProps) {
     const jz = verse.juz_number;
     const sName =
       chapters.find((c) => c.id === Number(verse.verse_key.split(":")[0]))
-        ?.name_simple ?? surahName;
+        ?.name_simple ?? "—";
     const last = pages[pages.length - 1];
     if (!last || last.pageNumber !== pg) {
-      pages.push({
-        pageNumber: pg,
-        juzNumber: jz,
-        surahName: sName,
-        verseList: [verse],
-      });
+      pages.push({ pageNumber: pg, juzNumber: jz, surahName: sName, verseList: [verse] });
     } else {
       last.verseList.push(verse);
     }
   });
 
+  // Track which verse IDs are at a surah boundary
+  const surahBoundaryVerseIds = new Set<number>();
+  const surahBoundaryMap = new Map<number, number>(); // verseId -> surahId
+
+  verses.forEach((verse, i) => {
+    const currentSurahId = Number(verse.verse_key.split(":")[0]);
+    const prevSurahId = i > 0 ? Number(verses[i - 1].verse_key.split(":")[0]) : null;
+    if (currentSurahId !== prevSurahId) {
+      surahBoundaryVerseIds.add(verse.id);
+      surahBoundaryMap.set(verse.id, currentSurahId);
+    }
+  });
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
+      {/* Scrollable reading area */}
       <div className="flex-1 overflow-y-auto">
         <div className="flex flex-col items-center px-8 py-8 gap-2">
-          {/* Surah header */}
-          {mode === "Surah" && chapter && (
-            <div className="relative flex flex-col items-center w-full max-w-2xl mb-2">
-              {/* City image — absolutely pinned to top-left */}
-              <div className="absolute left-0 top-0 w-28 h-28 opacity-60 dark:opacity-50 flex-shrink-0">
-                <Image
-                  src={
-                    isMakkah
-                      ? "/assets/images/makkah.webp"
-                      : "/assets/images/madinah.webp"
-                  }
-                  alt={revelationPlace}
-                  width={112}
-                  height={112}
-                  className="object-contain brightness-110 contrast-110 dark:brightness-200 dark:contrast-125 dark:invert"
-                />
-              </div>
 
-              {/* Centered title + bismillah */}
-              <div className="flex flex-col items-center gap-1 w-full">
-                <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 tracking-wide">
-                  Surah {surahName}
-                </h1>
-                <p className="text-sm text-gray-400 dark:text-gray-500">
-                  Ayah {String(ayahCount).padStart(2, "0")} · {revelationPlace}
-                </p>
-
-                {id !== 1 && (
-                  <div className="mt-4">
-                    <Image
-                      src="/assets/svg/bismillah.svg"
-                      alt="Bismillah"
-                      width={220}
-                      height={52}
-                      className="opacity-75 dark:opacity-60 dark:invert"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Loading */}
+          {/* Loading spinner */}
           {loading && (
             <div className="flex items-center justify-center py-20">
               <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
             </div>
           )}
+
+          {/* Error */}
           {error && <p className="text-red-400 py-20">{error}</p>}
 
           {/* Verses grouped by page */}
           {!loading && !error && (
             <div className="w-full max-w-2xl flex flex-col">
-              {pages.map((page, pageIndex) => (
-                <div key={page.pageNumber}>
-                  <PageSeparator
-                    surahName={page.surahName}
-                    pageNumber={page.pageNumber}
-                    juzNumber={page.juzNumber}
-                    showBorder={pageIndex > 0}
-                  />
+              {pages.map((page, pageIndex) => {
+                // Collect surah IDs that start on this page
+                const surahHeadersOnPage: { verseId: number; surahId: number }[] = [];
+                page.verseList.forEach((verse) => {
+                  if (surahBoundaryVerseIds.has(verse.id)) {
+                    surahHeadersOnPage.push({
+                      verseId: verse.id,
+                      surahId: surahBoundaryMap.get(verse.id)!,
+                    });
+                  }
+                });
 
-                  {/* Arabic text — centered */}
-                  <div
-                    className="text-gray-800 dark:text-gray-200 mb-4"
-                    dir="rtl"
-                    style={{
-                      fontSize: "24px",
-                      lineHeight: "3rem",
-                      textAlign: "center",
-                    }}
-                  >
-                    {page.verseList.map((verse) => (
-                      <span key={verse.id}>
-                        {verse.words?.map((word) => (
-                          <WordChip key={word.id} word={word} />
-                        ))}
-                        <AyahEndMark number={verse.verse_number} />
-                      </span>
+                return (
+                  <div key={page.pageNumber}>
+                    {/* Page separator */}
+                    <PageSeparator
+                      surahName={page.surahName}
+                      pageNumber={page.pageNumber}
+                      juzNumber={page.juzNumber}
+                      showBorder={pageIndex > 0}
+                    />
+
+                    {/* Surah headers at boundaries */}
+                    {surahHeadersOnPage.map(({ surahId }) => (
+                      <div
+                        key={surahId}
+                        ref={(el) => { surahRefs.current[surahId] = el; }}
+                      >
+                        <SurahHeader chapterId={surahId} chapters={chapters} />
+                      </div>
                     ))}
+
+                    {/* Arabic text */}
+                    <div
+                      className="text-gray-800 dark:text-gray-200 mb-4"
+                      dir="rtl"
+                      style={{
+                        fontSize: "24px",
+                        lineHeight: "3rem",
+                        textAlign: "center",
+                      }}
+                    >
+                      {page.verseList.map((verse) => (
+                        <span key={verse.id}>
+                          {verse.words?.map((word) => (
+                            <WordChip key={word.id} word={word} />
+                          ))}
+                          <AyahEndMark number={verse.verse_number} />
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
