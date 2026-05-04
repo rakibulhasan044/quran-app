@@ -1,73 +1,62 @@
+// components/shared/Navbar.tsx
 "use client";
-
+import { Search, Sun, Moon, Settings } from "lucide-react";
 import Link from "next/link";
-import { Search, Moon, Sun } from "lucide-react";
 import { useDarkMode } from "@/hooks/useDarkMode";
 
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuList,
-  NavigationMenuLink,
-} from "@/components/ui/navigation-menu";
+interface NavbarProps {
+  onOpenSettings?: () => void;
+}
 
-export function Navbar() {
+export function Navbar({ onOpenSettings }: NavbarProps) {
   const { dark, toggle } = useDarkMode();
 
   return (
-    <div className="w-full border-b px-4 py-3 flex items-center justify-between">
-
+    <div className="w-full border-b dark:border-neutral-800 px-4 py-3 flex items-center justify-between flex-shrink-0">
       {/* Left: Logo */}
-      <Link href="/" className="text-lg font-semibold">
-        Quran Mazid
-      </Link>
+      <div className="flex items-center gap-3">
+        <Link href="/" className="flex flex-col">
+          <span className="text-base font-bold text-gray-900 dark:text-gray-100 leading-tight">
+            Quran Mazid
+          </span>
+          <span className="text-xs text-gray-400 hidden sm:block">
+            Read, Study, and Learn The Quran
+          </span>
+        </Link>
+      </div>
 
-      {/* Right: Menu */}
-      <NavigationMenu>
-        <NavigationMenuList className="flex items-center gap-2">
+      {/* Right: Actions */}
+      <div className="flex items-center gap-1">
+        {/* Search */}
+        <button className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors">
+          <Search className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+        </button>
 
-          {/* Search */}
-          <NavigationMenuItem>
-            <NavigationMenuLink
-              render={
-                <button className="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-800">
-                  <Search className="w-5 h-5" />
-                </button>
-              }
-            />
-          </NavigationMenuItem>
+        {/* Theme Toggle */}
+        <button
+          onClick={toggle}
+          className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+        >
+          {dark ? (
+            <Sun className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          ) : (
+            <Moon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          )}
+        </button>
 
-          {/* Theme Toggle */}
-          <NavigationMenuItem>
-            <NavigationMenuLink
-              render={
-                <button
-                  onClick={toggle}
-                  className="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-800"
-                >
-                  {dark ? (
-                    <Sun className="w-5 h-5" />
-                  ) : (
-                    <Moon className="w-5 h-5" />
-                  )}
-                </button>
-              }
-            />
-          </NavigationMenuItem>
+        {/* Settings icon — only on tablet/mobile (hidden on xl) */}
+        <button
+          onClick={onOpenSettings}
+          className="xl:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+        >
+          <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+        </button>
 
-          {/* Support Us */}
-          <NavigationMenuItem>
-            <NavigationMenuLink
-              render={
-                <button className="px-4 py-2 rounded-md text-white bg-green-800 text-sm font-medium">
-                  Support Us
-                </button>
-              }
-            />
-          </NavigationMenuItem>
-
-        </NavigationMenuList>
-      </NavigationMenu>
+        {/* Support Us — hidden on small screens */}
+        <button className="hidden sm:flex items-center gap-2 ml-2 px-4 py-2 rounded-lg text-white bg-green-700 hover:bg-green-800 text-sm font-medium transition-colors">
+          Support Us 🤍
+        </button>
+      </div>
     </div>
   );
 }

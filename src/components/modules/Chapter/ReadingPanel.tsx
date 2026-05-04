@@ -42,6 +42,7 @@ function AyahEndMark({ number }: { number: number }) {
   );
 }
 
+// Now rendered AFTER the surah header, full width
 function PageSeparator({
   surahName,
   pageNumber,
@@ -54,19 +55,21 @@ function PageSeparator({
   showBorder?: boolean;
 }) {
   return (
-    <div
-      className={`w-full flex items-center justify-between py-3 my-2 ${showBorder ? "border-t border-gray-100 dark:border-neutral-800" : ""}`}
-      dir="ltr"
-    >
-      <span className="text-sm text-gray-400 dark:text-gray-500 w-32 truncate shrink-0">
-        {surahName}
-      </span>
-      <span className="text-sm text-gray-400 dark:text-gray-500 shrink-0">
-        Page: {String(pageNumber).padStart(2, "0")}
-      </span>
-      <span className="text-sm text-gray-400 dark:text-gray-500 w-32 text-right shrink-0">
-        Juz: {String(juzNumber).padStart(2, "0")}
-      </span>
+    <div className="w-full" dir="ltr">
+      {showBorder && (
+        <div className="w-full border-t border-gray-100 dark:border-neutral-800 mb-2" />
+      )}
+      <div className="flex items-center justify-between py-2">
+        <span className="text-sm text-gray-400 dark:text-gray-500 w-32 truncate shrink-0">
+          {surahName}
+        </span>
+        <span className="text-sm text-gray-400 dark:text-gray-500 shrink-0">
+          Page: {String(pageNumber).padStart(2, "0")}
+        </span>
+        <span className="text-sm text-gray-400 dark:text-gray-500 w-32 text-right shrink-0">
+          Juz: {String(juzNumber).padStart(2, "0")}
+        </span>
+      </div>
     </div>
   );
 }
@@ -84,7 +87,7 @@ function SurahHeader({
   const revelationPlace = isMakkah ? "Makkah" : "Madinah";
 
   return (
-    <div className="relative flex flex-col items-center w-full max-w-2xl mb-4 mt-6">
+    <div className="relative flex flex-col items-center w-full mb-4 mt-6">
       <div className="absolute left-0 top-0 w-28 h-28 opacity-60 dark:opacity-50">
         <Image
           src={
@@ -140,7 +143,6 @@ function WordChip({
 
   const handleClick = () => {
     if (viewMode === "Reading") {
-      // Reading mode — play only the clicked word via local Audio
       if (!word.audio_url) return;
       const url = word.audio_url.startsWith("http")
         ? word.audio_url
@@ -155,7 +157,6 @@ function WordChip({
         a.play().catch(() => {});
       }
     } else {
-      // Translation mode — clicking a word plays the full verse via AudioContext
       const [surahId, ayahId] = verseKey.split(":").map(Number);
       const url = `https://verses.quran.com/Alafasy/mp3/${String(surahId).padStart(3, "0")}${String(ayahId).padStart(3, "0")}.mp3`;
       play(url, `Verse ${verseKey}`);
@@ -196,6 +197,7 @@ function TranslationVerse({
   arabicFontSize,
   translationFontSize,
 }: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   verse: any;
   translation?: string;
   onPlayAudio: (url: string, label: string) => void;
@@ -206,43 +208,37 @@ function TranslationVerse({
 }) {
   const verseKey = verse.verse_key;
   const [surahId, ayahId] = verseKey.split(":").map(Number);
-
-  // Full verse audio URL for the play button
   const verseAudioUrl = `https://verses.quran.com/Alafasy/mp3/${String(surahId).padStart(3, "0")}${String(ayahId).padStart(3, "0")}.mp3`;
 
   return (
+    <>
     <div className="flex gap-3 py-4 border-b dark:border-neutral-800 last:border-0">
-      {/* Action icons column */}
       <div className="flex flex-col items-center gap-2 pt-1 flex-shrink-0">
-        <span className="text-xs font-semibold text-green-600">{verseKey}</span>
-
-        {/* Play full verse */}
+        <span className="text-xs font-semibold text-[#428039]">{verseKey}</span>
         <button
           onClick={() => onPlayAudio(verseAudioUrl, `Verse ${verseKey}`)}
           className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors cursor-pointer"
         >
-          <Play className="w-3.5 h-3.5 text-gray-400 hover:text-green-600" />
+          <Play className="w-3.5 h-3.5 text-[#9AA8A2]" />
         </button>
-
-        {/* Tafsir */}
         <button
           onClick={() => onOpenTafsir?.(surahId, ayahId)}
           className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors cursor-pointer"
         >
-          <BookOpen className="w-3.5 h-3.5 text-gray-400 hover:text-green-600" />
+          <BookOpen className="w-3.5 h-3.5 text-[#9AA8A2]" />
         </button>
       </div>
 
-      {/* Content */}
       <div className="flex-1">
-        {/* Arabic words — clicking plays full verse in Translation mode */}
         <p
           className="text-right text-gray-800 dark:text-gray-100 mb-3 leading-loose"
           dir="rtl"
           style={{ fontFamily: arabicFont, fontSize: `${arabicFontSize}px` }}
         >
           {verse.words
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             ?.filter((w: any) => w.char_type_name === "word")
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .map((w: any) => (
               <WordChip
                 key={w.id}
@@ -252,11 +248,9 @@ function TranslationVerse({
               />
             ))}
         </p>
-
         <p className="text-xs uppercase tracking-wider text-gray-400 mb-1 font-medium">
           Saheeh International
         </p>
-
         <p
           className="text-gray-700 dark:text-gray-300 leading-relaxed"
           style={{ fontSize: `${translationFontSize}px` }}
@@ -264,7 +258,10 @@ function TranslationVerse({
           {translation ?? "Loading..."}
         </p>
       </div>
+      <hr></hr>
     </div>
+    <hr></hr>
+    </>
   );
 }
 
@@ -296,6 +293,7 @@ export function ReadingPanel({
         .then((r) => r.json())
         .then((d) => {
           const map: Record<string, string> = {};
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           Object.entries(d.verses ?? {}).forEach(([ayah, v]: [string, any]) => {
             map[`${sid}:${ayah}`] = v.translation;
           });
@@ -305,13 +303,16 @@ export function ReadingPanel({
     });
   }, [viewMode, verses]);
 
+  // ✅ Fixed: 100ms delay so refs are mounted before scrolling
   useEffect(() => {
-    if (scrollToSurahId && surahRefs.current[scrollToSurahId]) {
-      surahRefs.current[scrollToSurahId]?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
+    if (!scrollToSurahId) return;
+    const timer = setTimeout(() => {
+      const el = surahRefs.current[scrollToSurahId];
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 100);
+    return () => clearTimeout(timer);
   }, [scrollToSurahId]);
 
   // Group verses by page
@@ -347,7 +348,7 @@ export function ReadingPanel({
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <div className="flex-1 overflow-y-auto">
-        <div className="flex flex-col items-center px-8 py-8 gap-2">
+        <div className="flex flex-col items-center gap-2 px-8 py-8">
           {loading && (
             <div className="flex items-center justify-center py-20">
               <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
@@ -361,6 +362,7 @@ export function ReadingPanel({
               {/* ── READING MODE ── */}
               {viewMode === "Reading" &&
                 pages.map((page, pageIndex) => {
+                  // Collect surah boundaries on this page
                   const surahHeadersOnPage: { verseId: number; surahId: number }[] = [];
                   page.verseList.forEach((verse) => {
                     if (surahBoundaryVerseIds.has(verse.id)) {
@@ -371,14 +373,11 @@ export function ReadingPanel({
                     }
                   });
 
+                  const hasSurahHeader = surahHeadersOnPage.length > 0;
+
                   return (
                     <div key={page.pageNumber}>
-                      <PageSeparator
-                        surahName={page.surahName}
-                        pageNumber={page.pageNumber}
-                        juzNumber={page.juzNumber}
-                        showBorder={pageIndex > 0}
-                      />
+                      {/* ✅ Surah header FIRST (with scroll ref) */}
                       {surahHeadersOnPage.map(({ surahId }) => (
                         <div
                           key={surahId}
@@ -387,6 +386,15 @@ export function ReadingPanel({
                           <SurahHeader chapterId={surahId} chapters={chapters} />
                         </div>
                       ))}
+
+                      {/* ✅ Page separator AFTER header, full-width border */}
+                      <PageSeparator
+                        surahName={page.surahName}
+                        pageNumber={page.pageNumber}
+                        juzNumber={page.juzNumber}
+                        showBorder={pageIndex > 0 && !hasSurahHeader}
+                      />
+
                       <div
                         className="text-gray-800 dark:text-gray-200 mb-4"
                         dir="rtl"
@@ -418,30 +426,35 @@ export function ReadingPanel({
               {/* ── TRANSLATION MODE ── */}
               {viewMode === "Translation" &&
                 (() => {
-                  const firstSurahId = verses[0]
-                    ? Number(verses[0].verse_key.split(":")[0])
-                    : null;
                   return (
                     <>
-                      {firstSurahId && (
-                        <div
-                          ref={(el) => { if (firstSurahId) surahRefs.current[firstSurahId] = el; }}
-                        >
-                          <SurahHeader chapterId={firstSurahId} chapters={chapters} />
-                        </div>
-                      )}
-                      {verses.map((verse) => (
-                        <TranslationVerse
-                          key={verse.id}
-                          verse={verse}
-                          translation={translations[verse.verse_key]}
-                          onPlayAudio={play}
-                          onOpenTafsir={onOpenTafsir}
-                          arabicFont={arabicFont}
-                          arabicFontSize={arabicFontSize}
-                          translationFontSize={translationFontSize}
-                        />
-                      ))}
+                      {verses.map((verse, i) => {
+                        const surahId = Number(verse.verse_key.split(":")[0]);
+                        const prevSurahId = i > 0
+                          ? Number(verses[i - 1].verse_key.split(":")[0])
+                          : null;
+                        const isBoundary = surahId !== prevSurahId;
+
+                        return (
+                          <div key={verse.id}>
+                            {/* ✅ Surah header at every boundary with scroll ref */}
+                            {isBoundary && (
+                              <div ref={(el) => { surahRefs.current[surahId] = el; }}>
+                                <SurahHeader chapterId={surahId} chapters={chapters} />
+                              </div>
+                            )}
+                            <TranslationVerse
+                              verse={verse}
+                              translation={translations[verse.verse_key]}
+                              onPlayAudio={play}
+                              onOpenTafsir={onOpenTafsir}
+                              arabicFont={arabicFont}
+                              arabicFontSize={arabicFontSize}
+                              translationFontSize={translationFontSize}
+                            />
+                          </div>
+                        );
+                      })}
                     </>
                   );
                 })()}

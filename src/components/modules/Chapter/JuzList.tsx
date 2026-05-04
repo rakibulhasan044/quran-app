@@ -86,22 +86,6 @@ export function JuzList({ selected, onSelect, onScrollToSurah }: JuzListProps) {
                       : "border-slate-100 dark:border-neutral-800 hover:bg-[#F4F7F3] dark:hover:bg-[#121810] hover:border-[#C5D5C2] dark:hover:border-[#2a3d27]"
                   }`}
               >
-                <div
-                  className={`w-8 h-8 flex items-center justify-center flex-shrink-0 transition-colors
-                    ${
-                      isSelected
-                        ? "bg-[#428039] text-white"
-                        : "bg-slate-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-300 group-hover:bg-[#428039] group-hover:text-white dark:group-hover:bg-[#428039] dark:group-hover:text-white"
-                    }`}
-                  style={{ borderRadius: "6px", transform: "rotate(45deg)" }}
-                >
-                  <span
-                    style={{ transform: "rotate(-45deg)" }}
-                    className="text-xs font-bold"
-                  >
-                    {j.juz_number}
-                  </span>
-                </div>
 
                 <div className="flex-1 min-w-0">
                   <p
@@ -134,8 +118,9 @@ export function JuzList({ selected, onSelect, onScrollToSurah }: JuzListProps) {
                     <button
                       key={surah.id}
                       onClick={(e) => {
-                        e.stopPropagation(); // ← prevents parent juz button from firing
-                        onSurahClick?.(surah.id);
+                        e.stopPropagation();
+                        onSelect(j.juz_number); // keep the juz selected in the list
+                        onScrollToSurah?.(surah.id); // this now also sets mode + selectedSurah
                       }}
                       className="group flex items-center gap-3 px-3 py-3 rounded-xl text-left transition-all cursor-pointer w-full border border-slate-100 dark:border-neutral-800 hover:bg-[#F4F7F3] dark:hover:bg-[#121810] hover:border-[#C5D5C2] dark:hover:border-[#2a3d27]"
                     >
@@ -162,12 +147,6 @@ export function JuzList({ selected, onSelect, onScrollToSurah }: JuzListProps) {
                           {surah.translation}
                         </p>
                       </div>
-                      <span
-                        className="text-sm text-[#7A8B85] font-arabic flex-shrink-0 font-semibold"
-                        dir="rtl"
-                      >
-                        {surah.arabic}
-                      </span>
                     </button>
                   ))}
                 </div>
