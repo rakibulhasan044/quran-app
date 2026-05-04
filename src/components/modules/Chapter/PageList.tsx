@@ -28,7 +28,7 @@ export function PageList({ selected, onSelect }: PageListProps) {
           placeholder="Search Page"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-9 pr-3 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-[#171717] text-sm outline-none focus:ring-2 focus:ring-green-500"
+          className="w-full pl-9 pr-3 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-[#171717] text-sm outline-none "
         />
       </div>
 

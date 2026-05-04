@@ -4,7 +4,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   try {
     const { id } = await params;
     const res = await fetch(
-      `https://api.quran.com/api/v4/verses/by_juz/${id}?per_page=286&words=true&word_fields=text_indopak,translation,audio_url&translation_language=bn&fields=page_number,juz_number,text_indopak,verse_number`,
+      `https://api.quran.com/api/v4/verses/by_chapter/${id}?per_page=286&words=true&word_fields=text_indopak,translation,audio_url&translation_language=en&translations=131&fields=page_number,juz_number,text_indopak,verse_number,translations`,
       { next: { revalidate: 86400 }, headers: { Accept: "application/json" } }
     );
     if (!res.ok) return NextResponse.json({ error: `API error: ${res.status}` }, { status: res.status });

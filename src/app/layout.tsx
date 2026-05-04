@@ -1,7 +1,15 @@
 import type { Metadata } from "next";
-import { Inter, Amiri, Noto_Naskh_Arabic,Scheherazade_New  } from "next/font/google";
+import {
+  Inter,
+  Amiri,
+  Noto_Naskh_Arabic,
+  Scheherazade_New,
+} from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { QuranSettingsProvider } from "@/context/QuranSettingsContext";
+import { AudioProvider } from "@/context/AudioContext";
+import { AudioPlayerBar } from "@/components/shared/AudioPlayerBar";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -43,7 +51,13 @@ export default function RootLayout({
       className={`${inter.variable} ${amiri.variable} ${notoNaskhArabic.variable} ${scheherazade.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-[family-name:var(--font-inter)]">
-        <TooltipProvider>{children}</TooltipProvider>
+        <TooltipProvider>
+          <QuranSettingsProvider>
+            <AudioProvider>{children}
+              <AudioPlayerBar />
+            </AudioProvider>
+          </QuranSettingsProvider>
+        </TooltipProvider>
       </body>
     </html>
   );

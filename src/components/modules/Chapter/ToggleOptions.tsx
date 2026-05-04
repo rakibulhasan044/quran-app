@@ -5,7 +5,7 @@ import { SurahList } from "./SurahList";
 import { JuzList } from "./JuzList";
 import { PageList } from "./PageList";
 
-type Mode = "Surah" | "Juz" | "Page";
+type Mode = "Surah" | "Juz" | "Page" ;
 
 interface ToggleOptionsProps {
   mode: Mode;
