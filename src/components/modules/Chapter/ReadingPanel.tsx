@@ -181,7 +181,7 @@ function WordChip({
           lineHeight: "3rem",
         }}
       >
-        {word.text_indopak}
+        {word.text_uthmani}
       </span>
     </span>
   );

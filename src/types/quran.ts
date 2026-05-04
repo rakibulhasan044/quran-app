@@ -2,7 +2,7 @@
 export interface Word {
   id: number;
   position: number;
-  text_indopak: string;
+  text_uthmani: string;
   audio_url: string | null;
   translation: {
     text: string;
