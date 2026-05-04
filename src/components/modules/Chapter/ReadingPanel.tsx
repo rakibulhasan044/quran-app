@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useQuranData } from "@/hooks/useQuranData";
 import { useChapters } from "@/hooks/useQuranMeta";
 import { useRef, useState } from "react";
+import Image from "next/image";
 import type { Word } from "@/types/quran";
 
 type Mode = "Surah" | "Juz" | "Page";
@@ -20,27 +21,46 @@ function toArabicIndic(n: number): string {
 
 function AyahEndMark({ number }: { number: number }) {
   return (
-    <span
-      className="inline-flex items-center justify-center mx-1 select-none align-middle"
-      style={{
-        fontFamily: "'Noto Naskh Arabic', 'Amiri', serif",
-        fontSize: "28px",
-        lineHeight: "3.2rem",
-        color: "inherit",
-        // Unicode circle with number inside using the end of ayah mark
-      }}
-    >
-      {/* Ayah end mark ۝ with number overlay */}
-      <span className="relative inline-flex items-center justify-center">
-        <span style={{ fontSize: "32px", color: "#16a34a" }}>۝</span>
-        <span
-          className="absolute inset-0 flex items-center justify-center text-green-700 dark:text-green-400"
-          style={{ fontSize: "11px", fontWeight: 700, marginTop: "1px" }}
-        >
-          {toArabicIndic(number)}
-        </span>
+    <span className="inline-flex items-center justify-center mx-1 select-none align-middle relative">
+      <span
+        style={{ fontSize: "32px", lineHeight: "3.2rem", color: "#16a34a" }}
+      >
+        ۝
+      </span>
+      <span
+        className="absolute inset-0 flex items-center justify-center text-green-700 dark:text-green-400"
+        style={{ fontSize: "11px", fontWeight: 700, marginTop: "1px" }}
+      >
+        {toArabicIndic(number)}
       </span>
     </span>
+  );
+}
+
+function PageSeparator({
+  surahName,
+  pageNumber,
+  juzNumber,
+}: {
+  surahName: string;
+  pageNumber: number;
+  juzNumber: number;
+}) {
+  return (
+    <div
+      className="w-full flex items-center justify-between py-3 my-2 border-t border-gray-100 dark:border-neutral-800"
+      dir="ltr"
+    >
+      <span className="text-sm text-gray-400 dark:text-gray-500 w-32 truncate shrink-0">
+        {surahName}
+      </span>
+      <span className="text-sm text-gray-400 dark:text-gray-500 shrink-0">
+        Page: {String(pageNumber).padStart(2, "0")}
+      </span>
+      <span className="text-sm text-gray-400 dark:text-gray-500 w-32 text-right shrink-0">
+        Juz: {String(juzNumber).padStart(2, "0")}
+      </span>
+    </div>
   );
 }
 
@@ -49,7 +69,7 @@ function WordChip({ word }: { word: Word }) {
   const [hovering, setHovering] = useState(false);
 
   const isWord = word.char_type_name === "word";
-  const banglaText = word.translation?.text;
+  const tooltipText = word.translation?.text;
 
   const playAudio = () => {
     if (!word.audio_url) return;
@@ -71,32 +91,23 @@ function WordChip({ word }: { word: Word }) {
 
   return (
     <span className="relative inline-flex flex-col items-center">
-      {/* Bangla tooltip on hover */}
-      {hovering && banglaText && (
-        <span
-          className="absolute -top-10 left-1/2 -translate-x-1/2 z-50 whitespace-nowrap bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs px-2 py-1 rounded-lg shadow-lg pointer-events-none"
-          style={{ fontFamily: "inherit" }}
-        >
-          {banglaText}
+      {/* Tooltip */}
+      {hovering && tooltipText && (
+        <span className="absolute -top-10 left-1/2 -translate-x-1/2 z-50 whitespace-nowrap bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs px-2 py-1 rounded-lg shadow-lg pointer-events-none">
+          {tooltipText}
           <span className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-900 dark:border-t-gray-100" />
         </span>
       )}
 
-      {/* Arabic word — use text_uthmani to avoid missing glyph boxes */}
+      {/* Arabic word — green text on hover, no background */}
       <span
         onClick={playAudio}
         onMouseEnter={() => setHovering(true)}
         onMouseLeave={() => setHovering(false)}
-        className="cursor-pointer px-1 py-0.5 rounded-lg transition-colors hover:bg-green-100 dark:hover:bg-green-900/30 active:scale-95"
-        style={{
-          fontFamily: "'Noto Naskh Arabic', 'Amiri', serif",
-          fontSize: "28px",
-          lineHeight: "3.2rem",
-          // color stays inherited — no green on hover
-        }}
+        className="cursor-pointer px-0.5 transition-colors hover:text-green-600 dark:hover:text-green-400"
+        style={{ fontSize: "28px", lineHeight: "3.2rem" }}
       >
-        {/* Switch from text_indopak → text_uthmani to avoid boxes */}
-        {word.text_uthmani ?? word.text_indopak}
+        {word.text_indopak}
       </span>
     </span>
   );
@@ -107,50 +118,91 @@ export function ReadingPanel({ mode, id, onPrev, onNext }: ReadingPanelProps) {
   const { chapters } = useChapters();
 
   const firstVerse = verses[0];
-  const chapterId = firstVerse ? Number(firstVerse.verse_key.split(":")[0]) : null;
+  const chapterId = firstVerse
+    ? Number(firstVerse.verse_key.split(":")[0])
+    : null;
   const chapter = chapters.find((c) => c.id === chapterId);
 
   const surahName = chapter?.name_simple ?? "—";
-  const pageNum = firstVerse?.page_number ?? "-";
-  const juzNum = firstVerse?.juz_number ?? "-";
   const isMakkah = chapter?.revelation_place?.toLowerCase() === "makkah";
   const ayahCount = chapter?.verses_count;
   const revelationPlace = isMakkah ? "Makkah" : "Madinah";
   const maxId = mode === "Surah" ? 114 : mode === "Juz" ? 30 : 604;
 
+  // Group verses by page_number
+  const pages: {
+    pageNumber: number;
+    juzNumber: number;
+    surahName: string;
+    verseList: typeof verses;
+  }[] = [];
+
+  verses.forEach((verse) => {
+    const pg = verse.page_number;
+    const jz = verse.juz_number;
+    const sName =
+      chapters.find((c) => c.id === Number(verse.verse_key.split(":")[0]))
+        ?.name_simple ?? surahName;
+    const last = pages[pages.length - 1];
+    if (!last || last.pageNumber !== pg) {
+      pages.push({
+        pageNumber: pg,
+        juzNumber: jz,
+        surahName: sName,
+        verseList: [verse],
+      });
+    } else {
+      last.verseList.push(verse);
+    }
+  });
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      {/* Top meta bar */}
-      <div className="flex items-center justify-between px-8 py-3 border-b dark:border-neutral-800 text-sm text-gray-400 dark:text-gray-500 flex-shrink-0">
-        <span>{surahName}</span>
-        <span>Page: {String(pageNum).padStart(2, "0")}</span>
-        <span>Juz: {String(juzNum).padStart(2, "0")}</span>
-      </div>
-
-      {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="flex flex-col items-center px-8 py-8 gap-6">
-
+        <div className="flex flex-col items-center px-8 py-8 gap-2">
           {/* Surah header */}
           {mode === "Surah" && chapter && (
-            <div className="flex flex-col items-center gap-1 w-full max-w-2xl">
-              <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 tracking-wide">
-                Surah {surahName}
-              </h1>
-              <p className="text-sm text-gray-400 dark:text-gray-500">
-                Ayah {String(ayahCount).padStart(2, "0")} · {revelationPlace}
-              </p>
+            <div className="flex items-start justify-between w-full max-w-2xl mb-2">
+              {/* Left: city image */}
+              <div className="w-28 h-28 relative flex-shrink-0 opacity-60 dark:opacity-50">
+                <Image
+                  src={
+                    isMakkah
+                      ? "/assets/images/makkah.webp"
+                      : "/assets/images/madinah.webp"
+                  }
+                  alt={revelationPlace}
+                  width={112}
+                  height={112}
+                  className="object-contain brightness-110 contrast-110 dark:brightness-125 dark:contrast-125 dark:invert"
+                />
+              </div>
 
-              {/* Bismillah — shown for all surahs except 1 and 9 */}
-              {id !== 1 && id !== 9 && (
-                <p
-                  className="text-3xl text-gray-700 dark:text-gray-300 mt-4 mb-2"
-                  dir="rtl"
-                  style={{ fontFamily: "'Noto Naskh Arabic', 'Amiri', serif", lineHeight: "2" }}
-                >
-                  بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
+              {/* Center: title + bismillah */}
+              <div className="flex flex-col items-center gap-1 flex-1 px-4">
+                <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 tracking-wide">
+                  Surah {surahName}
+                </h1>
+                <p className="text-sm text-gray-400 dark:text-gray-500">
+                  Ayah {String(ayahCount).padStart(2, "0")} · {revelationPlace}
                 </p>
-              )}
+
+                {/* Bismillah SVG — skip for Al-Fatihah (1) and At-Tawbah (9) */}
+                {id !== 1 && (
+                  <div className="mt-4">
+                    <Image
+                      src="/assets/svg/bismillah.svg"
+                      alt="Bismillah"
+                      width={220}
+                      height={52}
+                      className="opacity-75 dark:opacity-60 dark:invert"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Right spacer to balance */}
+              <div className="w-20 flex-shrink-0" />
             </div>
           )}
 
@@ -162,36 +214,42 @@ export function ReadingPanel({ mode, id, onPrev, onNext }: ReadingPanelProps) {
           )}
           {error && <p className="text-red-400 py-20">{error}</p>}
 
-          {/* Verses — continuous mushaf-style flow */}
+          {/* Verses grouped by page */}
           {!loading && !error && (
-            <div
-              className="w-full max-w-2xl text-gray-800 dark:text-gray-200"
-              dir="rtl"
-              style={{
-                fontFamily: "'Noto Naskh Arabic', 'Amiri', serif",
-                fontSize: "28px",
-                lineHeight: "3.2rem",
-                textAlign: "justify",
-              }}
-            >
-              {verses.map((verse) => (
-                <span key={verse.id}>
-                  {verse.words?.map((word) => (
-                    <WordChip key={word.id} word={word} />
-                  ))}
-                  <AyahEndMark number={verse.verse_number} />
-                </span>
+            <div className="w-full max-w-2xl flex flex-col">
+              {pages.map((page, pageIndex) => (
+                <div key={page.pageNumber}>
+                  {/* Page meta row — shown above every page */}
+                  <PageSeparator
+                    surahName={page.surahName}
+                    pageNumber={page.pageNumber}
+                    juzNumber={page.juzNumber}
+                  />
+
+                  {/* Arabic text */}
+                  <div
+                    className="text-gray-800 dark:text-gray-200 mb-4"
+                    dir="rtl"
+                    style={{
+                      fontSize: "24px",
+                      lineHeight: "3rem",
+                      textAlign: "justify",
+                    }}
+                  >
+                    {page.verseList.map((verse) => (
+                      <span key={verse.id}>
+                        {verse.words?.map((word) => (
+                          <WordChip key={word.id} word={word} />
+                        ))}
+                        <AyahEndMark number={verse.verse_number} />
+                      </span>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           )}
         </div>
-      </div>
-
-      {/* Bottom meta bar */}
-      <div className="flex items-center justify-between px-8 py-3 border-t dark:border-neutral-800 text-sm text-gray-400 dark:text-gray-500 flex-shrink-0">
-        <span>{surahName}</span>
-        <span>Page: {String(pageNum).padStart(2, "0")}</span>
-        <span>Juz: {String(juzNum).padStart(2, "0")}</span>
       </div>
 
       {/* Prev / Next */}
