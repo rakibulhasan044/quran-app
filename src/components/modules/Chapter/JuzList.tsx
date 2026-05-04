@@ -18,7 +18,7 @@ export function JuzList({ selected, onSelect, onScrollToSurah }: JuzListProps) {
 
   const uniqueJuzs = juzs.filter(
     (j, index, self) =>
-      index === self.findIndex((x) => x.juz_number === j.juz_number)
+      index === self.findIndex((x) => x.juz_number === j.juz_number),
   );
 
   const getSurahsInJuz = (verseMapping: Record<string, string>) =>
@@ -37,14 +37,16 @@ export function JuzList({ selected, onSelect, onScrollToSurah }: JuzListProps) {
     const chapter = chapters.find((c) => c.id === Number(firstId));
     const count = Object.keys(verseMapping).length;
     return chapter
-      ? count > 1 ? `${chapter.name_simple} & More` : chapter.name_simple
+      ? count > 1
+        ? `${chapter.name_simple} & More`
+        : chapter.name_simple
       : "—";
   };
 
   const filtered = uniqueJuzs.filter(
     (j) =>
       `juz ${j.juz_number}`.includes(search.toLowerCase()) ||
-      String(j.juz_number).includes(search)
+      String(j.juz_number).includes(search),
   );
 
   return (
@@ -78,54 +80,77 @@ export function JuzList({ selected, onSelect, onScrollToSurah }: JuzListProps) {
                   setExpandedJuz(isExpanded ? null : j.juz_number);
                 }}
                 className={`group flex items-center gap-3 px-3 py-3 rounded-xl text-left transition-all cursor-pointer w-full border
-                  ${isSelected
-                    ? "bg-[#F4F7F3] dark:bg-[#121810] border-[#C5D5C2] dark:border-[#2a3d27]"
-                    : "border-slate-100 dark:border-neutral-800 hover:bg-[#F4F7F3] dark:hover:bg-[#121810] hover:border-[#C5D5C2] dark:hover:border-[#2a3d27]"
+                  ${
+                    isSelected
+                      ? "bg-[#F4F7F3] dark:bg-[#121810] border-[#C5D5C2] dark:border-[#2a3d27]"
+                      : "border-slate-100 dark:border-neutral-800 hover:bg-[#F4F7F3] dark:hover:bg-[#121810] hover:border-[#C5D5C2] dark:hover:border-[#2a3d27]"
                   }`}
               >
                 <div
                   className={`w-8 h-8 flex items-center justify-center flex-shrink-0 transition-colors
-                    ${isSelected
-                      ? "bg-[#428039] text-white"
-                      : "bg-slate-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-300 group-hover:bg-[#428039] group-hover:text-white dark:group-hover:bg-[#428039] dark:group-hover:text-white"
+                    ${
+                      isSelected
+                        ? "bg-[#428039] text-white"
+                        : "bg-slate-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-300 group-hover:bg-[#428039] group-hover:text-white dark:group-hover:bg-[#428039] dark:group-hover:text-white"
                     }`}
                   style={{ borderRadius: "6px", transform: "rotate(45deg)" }}
                 >
-                  <span style={{ transform: "rotate(-45deg)" }} className="text-xs font-bold">
+                  <span
+                    style={{ transform: "rotate(-45deg)" }}
+                    className="text-xs font-bold"
+                  >
                     {j.juz_number}
                   </span>
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-semibold ${isSelected ? "text-[#428039] dark:text-green-400" : "text-gray-800 dark:text-gray-200"}`}>
+                  <p
+                    className={`text-sm font-semibold ${isSelected ? "text-[#428039] dark:text-green-400" : "text-gray-800 dark:text-gray-200"}`}
+                  >
                     Juz {j.juz_number}
                   </p>
-                  <p className="text-xs text-gray-400">{getFirstSurahName(j.verse_mapping)}</p>
+                  <p className="text-xs text-gray-400">
+                    {getFirstSurahName(j.verse_mapping)}
+                  </p>
                 </div>
 
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-xs text-gray-400">{surahsInJuz.length} Surah</span>
-                  {isExpanded
-                    ? <ChevronUp className="w-3 h-3 text-gray-400" />
-                    : <ChevronDown className="w-3 h-3 text-gray-400" />
-                  }
+                  <span className="text-xs text-gray-400">
+                    {surahsInJuz.length} Surah
+                  </span>
+                  {isExpanded ? (
+                    <ChevronUp className="w-3 h-3 text-gray-400" />
+                  ) : (
+                    <ChevronDown className="w-3 h-3 text-gray-400" />
+                  )}
                 </div>
               </button>
 
               {/* Surah dropdown — stays in Juz, scrolls reading panel */}
+
               {isExpanded && surahsInJuz.length > 1 && (
                 <div className="mt-1 mb-1 flex flex-col gap-0.5">
                   {surahsInJuz.map((surah) => (
                     <button
                       key={surah.id}
-                      onClick={() => onScrollToSurah?.(surah.id)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // ← prevents parent juz button from firing
+                        onSurahClick?.(surah.id);
+                      }}
                       className="group flex items-center gap-3 px-3 py-3 rounded-xl text-left transition-all cursor-pointer w-full border border-slate-100 dark:border-neutral-800 hover:bg-[#F4F7F3] dark:hover:bg-[#121810] hover:border-[#C5D5C2] dark:hover:border-[#2a3d27]"
                     >
+                      {/* diamond */}
                       <div
                         className="w-8 h-8 flex items-center justify-center flex-shrink-0 transition-colors bg-slate-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-300 group-hover:bg-[#428039] group-hover:text-white dark:group-hover:bg-[#428039] dark:group-hover:text-white"
-                        style={{ borderRadius: "6px", transform: "rotate(45deg)" }}
+                        style={{
+                          borderRadius: "6px",
+                          transform: "rotate(45deg)",
+                        }}
                       >
-                        <span style={{ transform: "rotate(-45deg)" }} className="text-xs font-bold">
+                        <span
+                          style={{ transform: "rotate(-45deg)" }}
+                          className="text-xs font-bold"
+                        >
                           {surah.id}
                         </span>
                       </div>
@@ -133,8 +158,16 @@ export function JuzList({ selected, onSelect, onScrollToSurah }: JuzListProps) {
                         <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate">
                           {surah.name}
                         </p>
-                        <p className="text-xs text-gray-400">{surah.translation}</p>
+                        <p className="text-xs text-gray-400">
+                          {surah.translation}
+                        </p>
                       </div>
+                      <span
+                        className="text-sm text-[#7A8B85] font-arabic flex-shrink-0 font-semibold"
+                        dir="rtl"
+                      >
+                        {surah.arabic}
+                      </span>
                     </button>
                   ))}
                 </div>

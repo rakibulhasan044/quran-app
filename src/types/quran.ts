@@ -8,6 +8,7 @@ export interface Word {
     text: string;
     language_name: string;
   };
+  audio?: { url: string };
   char_type_name: string; // "word" | "end" | "pause"
 }
 export interface VerseTranslation {
