@@ -1,4 +1,3 @@
-// components/modules/Chapter/SurahList.tsx
 "use client";
 import { useState } from "react";
 import { Search } from "lucide-react";
@@ -13,10 +12,11 @@ export function SurahList({ selected, onSelect }: SurahListProps) {
   const [search, setSearch] = useState("");
   const { chapters, loading } = useChapters();
 
-  const filtered = chapters.filter((c) =>
-    c.name_simple.toLowerCase().includes(search.toLowerCase()) ||
-    c.translated_name.name.toLowerCase().includes(search.toLowerCase()) ||
-    String(c.id).includes(search)
+  const filtered = chapters.filter(
+    (c) =>
+      c.name_simple.toLowerCase().includes(search.toLowerCase()) ||
+      c.translated_name.name.toLowerCase().includes(search.toLowerCase()) ||
+      String(c.id).includes(search),
   );
 
   return (
@@ -32,33 +32,50 @@ export function SurahList({ selected, onSelect }: SurahListProps) {
         />
       </div>
 
-      <div className="flex flex-col gap-1 overflow-y-auto flex-1">
-        {loading && <p className="text-sm text-gray-400 text-center py-4">Loading...</p>}
+      <div className="flex flex-col gap-1 overflow-y-auto flex-1 no-scrollbar">
+        {loading && (
+          <p className="text-sm text-gray-400 text-center py-4">Loading...</p>
+        )}
         {filtered.map((c) => (
           <button
             key={c.id}
             onClick={() => onSelect(c.id)}
-            className={`flex items-center gap-3 px-3 py-3 rounded-xl text-left transition-all cursor-pointer w-full
-              ${selected === c.id
-                ? "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
-                : "hover:bg-gray-50 dark:hover:bg-neutral-800"
+            className={`group flex items-center gap-3 px-3 py-3 rounded-xl text-left transition-all cursor-pointer w-full border
+              ${
+                selected === c.id
+                  ? "bg-[#F4F7F3] dark:bg-[#121810] border-[#C5D5C2] dark:border-[#2a3d27]"
+                  : "border-slate-100 dark:border-neutral-800 hover:bg-[#F4F7F3] dark:hover:bg-[#121810] hover:border-[#C5D5C2] dark:hover:border-[#2a3d27]"
               }`}
           >
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg font-semibold flex-shrink-0
-              ${selected === c.id
-                ? "bg-green-600 text-white"
-                : "bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300"
-              }`}
+            {/* Diamond badge */}
+            <div
+              className={`w-8 h-8 flex items-center justify-center flex-shrink-0 transition-colors
+                ${
+                  selected === c.id
+                    ? "bg-[#428039] text-white"
+                    : "bg-slate-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-300 group-hover:bg-[#428039] group-hover:text-white dark:group-hover:bg-[#428039] dark:group-hover:text-white"
+                }`}
+              style={{ borderRadius: "6px", transform: "rotate(45deg)" }}
             >
-              {c.id}
+              <span style={{ transform: "rotate(-45deg)" }} className="text-xs font-bold">
+                {c.id}
+              </span>
             </div>
+
             <div className="flex-1 min-w-0">
-              <p className={`text-sm font-semibold truncate ${selected === c.id ? "text-green-700 dark:text-green-400" : "text-gray-800 dark:text-gray-200"}`}>
+              <p
+                className={`text-sm font-semibold truncate ${
+                  selected === c.id
+                    ? "text-[#353635] dark:text-[#C5C5C5]"
+                    : "text-gray-800 dark:text-gray-200"
+                }`}
+              >
                 {c.name_simple}
               </p>
               <p className="text-xs text-gray-400">{c.translated_name.name}</p>
             </div>
-            <span className="text-sm text-gray-400 font-arabic flex-shrink-0" dir="rtl">
+
+            <span className="text-sm text-[#7A8B85] font-arabic flex-shrink-0 font-semibold" dir="rtl">
               {c.name_arabic}
             </span>
           </button>

@@ -22,9 +22,7 @@ function toArabicIndic(n: number): string {
 function AyahEndMark({ number }: { number: number }) {
   return (
     <span className="inline-flex items-center justify-center mx-1 select-none align-middle relative">
-      <span
-        style={{ fontSize: "32px", lineHeight: "3.2rem", color: "#16a34a" }}
-      >
+      <span style={{ fontSize: "32px", lineHeight: "3rem", color: "#16a34a" }}>
         ۝
       </span>
       <span
@@ -41,14 +39,18 @@ function PageSeparator({
   surahName,
   pageNumber,
   juzNumber,
+  showBorder = false,
 }: {
   surahName: string;
   pageNumber: number;
   juzNumber: number;
+  showBorder?: boolean;
 }) {
   return (
     <div
-      className="w-full flex items-center justify-between py-3 my-2 border-t border-gray-100 dark:border-neutral-800"
+      className={`w-full flex items-center justify-between py-3 my-2 ${
+        showBorder ? "border-t border-gray-100 dark:border-neutral-800" : ""
+      }`}
       dir="ltr"
     >
       <span className="text-sm text-gray-400 dark:text-gray-500 w-32 truncate shrink-0">
@@ -91,21 +93,18 @@ function WordChip({ word }: { word: Word }) {
 
   return (
     <span className="relative inline-flex flex-col items-center">
-      {/* Tooltip */}
       {hovering && tooltipText && (
         <span className="absolute -top-10 left-1/2 -translate-x-1/2 z-50 whitespace-nowrap bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs px-2 py-1 rounded-lg shadow-lg pointer-events-none">
           {tooltipText}
           <span className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-900 dark:border-t-gray-100" />
         </span>
       )}
-
-      {/* Arabic word — green text on hover, no background */}
       <span
         onClick={playAudio}
         onMouseEnter={() => setHovering(true)}
         onMouseLeave={() => setHovering(false)}
         className="cursor-pointer px-0.5 transition-colors hover:text-green-600 dark:hover:text-green-400"
-        style={{ fontSize: "28px", lineHeight: "3.2rem" }}
+        style={{ fontSize: "24px", lineHeight: "3rem" }}
       >
         {word.text_indopak}
       </span>
@@ -129,7 +128,6 @@ export function ReadingPanel({ mode, id, onPrev, onNext }: ReadingPanelProps) {
   const revelationPlace = isMakkah ? "Makkah" : "Madinah";
   const maxId = mode === "Surah" ? 114 : mode === "Juz" ? 30 : 604;
 
-  // Group verses by page_number
   const pages: {
     pageNumber: number;
     juzNumber: number;
@@ -162,9 +160,9 @@ export function ReadingPanel({ mode, id, onPrev, onNext }: ReadingPanelProps) {
         <div className="flex flex-col items-center px-8 py-8 gap-2">
           {/* Surah header */}
           {mode === "Surah" && chapter && (
-            <div className="flex items-start justify-between w-full max-w-2xl mb-2">
-              {/* Left: city image */}
-              <div className="w-28 h-28 relative flex-shrink-0 opacity-60 dark:opacity-50">
+            <div className="relative flex flex-col items-center w-full max-w-2xl mb-2">
+              {/* City image — absolutely pinned to top-left */}
+              <div className="absolute left-0 top-0 w-28 h-28 opacity-60 dark:opacity-50 flex-shrink-0">
                 <Image
                   src={
                     isMakkah
@@ -174,12 +172,12 @@ export function ReadingPanel({ mode, id, onPrev, onNext }: ReadingPanelProps) {
                   alt={revelationPlace}
                   width={112}
                   height={112}
-                  className="object-contain brightness-110 contrast-110 dark:brightness-125 dark:contrast-125 dark:invert"
+                  className="object-contain brightness-110 contrast-110 dark:brightness-200 dark:contrast-125 dark:invert"
                 />
               </div>
 
-              {/* Center: title + bismillah */}
-              <div className="flex flex-col items-center gap-1 flex-1 px-4">
+              {/* Centered title + bismillah */}
+              <div className="flex flex-col items-center gap-1 w-full">
                 <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 tracking-wide">
                   Surah {surahName}
                 </h1>
@@ -187,7 +185,6 @@ export function ReadingPanel({ mode, id, onPrev, onNext }: ReadingPanelProps) {
                   Ayah {String(ayahCount).padStart(2, "0")} · {revelationPlace}
                 </p>
 
-                {/* Bismillah SVG — skip for Al-Fatihah (1) and At-Tawbah (9) */}
                 {id !== 1 && (
                   <div className="mt-4">
                     <Image
@@ -200,9 +197,6 @@ export function ReadingPanel({ mode, id, onPrev, onNext }: ReadingPanelProps) {
                   </div>
                 )}
               </div>
-
-              {/* Right spacer to balance */}
-              <div className="w-20 flex-shrink-0" />
             </div>
           )}
 
@@ -219,21 +213,21 @@ export function ReadingPanel({ mode, id, onPrev, onNext }: ReadingPanelProps) {
             <div className="w-full max-w-2xl flex flex-col">
               {pages.map((page, pageIndex) => (
                 <div key={page.pageNumber}>
-                  {/* Page meta row — shown above every page */}
                   <PageSeparator
                     surahName={page.surahName}
                     pageNumber={page.pageNumber}
                     juzNumber={page.juzNumber}
+                    showBorder={pageIndex > 0}
                   />
 
-                  {/* Arabic text */}
+                  {/* Arabic text — centered */}
                   <div
                     className="text-gray-800 dark:text-gray-200 mb-4"
                     dir="rtl"
                     style={{
                       fontSize: "24px",
                       lineHeight: "3rem",
-                      textAlign: "justify",
+                      textAlign: "center",
                     }}
                   >
                     {page.verseList.map((verse) => (
