@@ -54,7 +54,7 @@ export function RightPanel({ viewMode, onViewModeChange }: RightPanelProps) {
             className={`flex-1 py-3 text-sm font-medium transition-all cursor-pointer
               ${
                 viewMode === t
-                  ? "border-b-2 border-green-600 text-green-600"
+                  ? "border-b-2 border-green-600 text-[#428039]"
                   : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
               }`}
           >
@@ -96,8 +96,8 @@ export function RightPanel({ viewMode, onViewModeChange }: RightPanelProps) {
               onClick={() => setMushafOpen((p) => !p)}
               className="flex items-center justify-between w-full px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-800"
             >
-              <div className="flex items-center gap-2 text-sm font-semibold text-green-600">
-                <span className="w-5 h-5 rounded bg-green-600 text-white text-xs flex items-center justify-center font-bold">
+              <div className="flex items-center gap-2 text-sm font-semibold text-[#428039]">
+                <span className="w-5 h-5 rounded bg-[#428039] text-white text-xs flex items-center justify-center font-bold">
                   T
                 </span>
                 Change Mushaf
@@ -118,14 +118,14 @@ export function RightPanel({ viewMode, onViewModeChange }: RightPanelProps) {
                   >
                     <div
                       className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0
-                      ${mushaf === m.id ? "border-green-600" : "border-gray-300 dark:border-neutral-600"}`}
+                      ${mushaf === m.id ? "border-[#428039]" : "border-gray-300 dark:border-neutral-600"}`}
                     >
                       {mushaf === m.id && (
-                        <div className="w-2 h-2 rounded-full bg-green-600" />
+                        <div className="w-2 h-2 rounded-full bg-[#428039]" />
                       )}
                     </div>
                     <span
-                      className={`text-sm ${mushaf === m.id ? "text-green-700 dark:text-green-400 font-medium" : "text-gray-700 dark:text-gray-300"}`}
+                      className={`text-sm ${mushaf === m.id ? "text-[#428039] dark:text-[#428039] font-medium" : "text-gray-700 dark:text-gray-300"}`}
                     >
                       {m.label}
                     </span>
@@ -142,8 +142,8 @@ export function RightPanel({ viewMode, onViewModeChange }: RightPanelProps) {
             onClick={() => setFontOpen((p) => !p)}
             className="flex items-center justify-between w-full px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-800"
           >
-            <div className="flex items-center gap-2 text-sm font-semibold text-green-600">
-              <span className="w-5 h-5 rounded bg-green-600 text-white text-xs flex items-center justify-center font-bold">
+            <div className="flex items-center gap-2 text-sm font-semibold text-[#428039]">
+              <span className="w-5 h-5 rounded bg-[#428039] text-white text-xs flex items-center justify-center font-bold">
                 T
               </span>
               Font Settings
@@ -227,7 +227,7 @@ export function RightPanel({ viewMode, onViewModeChange }: RightPanelProps) {
         </div>
 
         {/* Support Us */}
-        <div className="m-4 rounded-2xl bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 p-4">
+        <div className="m-4 rounded-2xl bg-green-50 dark:bg-[#131C12] border border-green-100 dark:border-green-800 p-4">
           <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">
             Help spread the knowledge of Islam
           </p>
@@ -235,7 +235,7 @@ export function RightPanel({ viewMode, onViewModeChange }: RightPanelProps) {
             Your regular support helps us reach our religious brothers and
             sisters with the message of Islam.
           </p>
-          <button className="w-full bg-green-600 hover:bg-green-700 text-white text-sm font-semibold py-2 rounded-xl transition-all cursor-pointer">
+          <button className="w-full bg-[#428039] text-white text-sm font-semibold py-2 rounded-xl transition-all cursor-pointer">
             Support Us
           </button>
         </div>

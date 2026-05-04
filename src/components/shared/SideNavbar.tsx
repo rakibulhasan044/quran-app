@@ -1,5 +1,6 @@
 import {
   BookmarkCheck,
+  BookOpen,
   CircleEllipsisIcon,
   Grid2X2Plus,
   HomeIcon,
@@ -17,7 +18,9 @@ export default function SideNavbar() {
     <div className="flex flex-col h-screen items-center">
       {/* Top icon */}
       <div className="py-3">
-        <HomeIcon />
+        <div className="p-1 rounded-md bg-[#428039]">
+          <BookOpen className="text-white" />
+        </div>
       </div>
 
       {/* Middle icons */}

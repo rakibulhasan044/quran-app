@@ -1,21 +1,26 @@
-// hooks/useDarkMode.ts
 "use client";
 import { useState, useLayoutEffect } from "react";
 
-export function useDarkMode() {
-  const [dark, setDark] = useState(false);
+function getInitialTheme() {
+  if (typeof window === "undefined") return false;
 
+  const stored = localStorage.getItem("theme");
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+  return stored === "dark" || (!stored && prefersDark);
+}
+
+export function useDarkMode() {
+  const [dark, setDark] = useState(getInitialTheme);
+
+  // Only sync DOM (no setState here)
   useLayoutEffect(() => {
-    const stored = localStorage.getItem("theme");
-    const isDark = stored === "dark" || document.documentElement.classList.contains("dark");
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (isDark) setDark(true);
-  }, []);
+    document.documentElement.classList.toggle("dark", dark);
+  }, [dark]);
 
   const toggle = () => {
     setDark((prev) => {
       const next = !prev;
-      document.documentElement.classList.toggle("dark", next);
       localStorage.setItem("theme", next ? "dark" : "light");
       return next;
     });

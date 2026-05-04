@@ -59,19 +59,21 @@ export function ToggleOptions({
       </div>
 
       {/* Lists */}
-      {mode === "Surah" && (
-        <SurahList selected={selectedSurah} onSelect={onSurahSelect} />
-      )}
-      {mode === "Juz" && (
-        <JuzList
-          selected={selectedJuz}
-          onSelect={onJuzSelect}
-          onScrollToSurah={onScrollToSurah} // stays in Juz, just scrolls
-        />
-      )}
-      {mode === "Page" && (
-        <PageList selected={selectedPage} onSelect={onPageSelect} />
-      )}
+<div className="flex-1 min-h-0 overflow-hidden">
+  {mode === "Surah" && (
+    <SurahList selected={selectedSurah} onSelect={onSurahSelect} />
+  )}
+  {mode === "Juz" && (
+    <JuzList
+      selected={selectedJuz}
+      onSelect={onJuzSelect}
+      onScrollToSurah={onScrollToSurah}
+    />
+  )}
+  {mode === "Page" && (
+    <PageList selected={selectedPage} onSelect={onPageSelect} />
+  )}
+</div>
     </div>
   );
 }

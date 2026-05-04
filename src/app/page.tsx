@@ -57,7 +57,7 @@ export default function Home() {
 
   return (
     <div className="flex w-full h-screen overflow-hidden">
-      <div className="w-15 flex items-center justify-center flex-shrink-0">
+      <div className="w-15 flex items-center justify-center flex-shrink-0 bg-[#F3F4F6] dark:bg-[#171717]">
         <SideNavbar />
       </div>
 
@@ -66,7 +66,7 @@ export default function Home() {
 
         <div className="flex flex-1 overflow-hidden">
           {/* Left panel */}
-          <div className="w-72 border-r dark:border-neutral-800 overflow-hidden flex-col hidden md:flex flex-shrink-0">
+          <div className="md:w-60 lg:w-72 border-r dark:border-neutral-800 overflow-hidden flex-col hidden md:flex flex-shrink-0">
             <ToggleOptions
               mode={mode}
               onModeChange={setMode}

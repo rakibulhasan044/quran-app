@@ -464,7 +464,7 @@ export function ReadingPanel({
       </div>
 
       {/* Prev / Next */}
-      <div className="flex items-center justify-center gap-4 py-4 border-t dark:border-neutral-800 flex-shrink-0">
+      <div className="flex items-center justify-center gap-4 py-2 border-t dark:border-neutral-800 flex-shrink-0">
         <button
           onClick={onPrev}
           disabled={id <= 1}

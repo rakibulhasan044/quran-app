@@ -26,6 +26,7 @@ useEffect(() => {
       console.log("📖 VERSES:", d.verses); // 👈 verses only
 
       // Optional: log each ayah
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       Object.values(d.verses ?? {}).forEach((v: any) => {
         console.log("Ayah:", v.ayah);
         console.log("Translation:", v.translation);

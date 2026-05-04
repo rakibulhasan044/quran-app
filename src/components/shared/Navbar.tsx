@@ -29,7 +29,7 @@ export function Navbar({ onOpenSettings }: NavbarProps) {
       <div className="flex items-center gap-1">
         {/* Search */}
         <button className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors">
-          <Search className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          <Search className="w-5 h-5 text-gray-600 dark:text-[#428039]" />
         </button>
 
         {/* Theme Toggle */}
@@ -38,9 +38,9 @@ export function Navbar({ onOpenSettings }: NavbarProps) {
           className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
         >
           {dark ? (
-            <Sun className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            <Sun className="w-5 h-5 text-gray-600 dark:text-[#428039]" />
           ) : (
-            <Moon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            <Moon className="w-5 h-5 text-gray-600 dark:text-[#428039]" />
           )}
         </button>
 
@@ -49,11 +49,11 @@ export function Navbar({ onOpenSettings }: NavbarProps) {
           onClick={onOpenSettings}
           className="xl:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
         >
-          <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          <Settings className="w-5 h-5 text-gray-600 dark:text-[#428039]" />
         </button>
 
         {/* Support Us — hidden on small screens */}
-        <button className="hidden sm:flex items-center gap-2 ml-2 px-4 py-2 rounded-lg text-white bg-green-700 hover:bg-green-800 text-sm font-medium transition-colors">
+        <button className="hidden sm:flex items-center gap-2 ml-2 px-4 py-2 rounded-lg text-white bg-[#428039] text-sm font-medium transition-colors">
           Support Us 🤍
         </button>
       </div>
