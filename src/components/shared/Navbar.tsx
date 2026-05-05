@@ -1,5 +1,5 @@
 "use client";
-import { Search, Sun, Moon, Settings, Menu } from "lucide-react";
+import { Search, Sun, Moon, Settings, Menu, Heart } from "lucide-react";
 import Link from "next/link";
 import { useDarkMode } from "@/hooks/useDarkMode";
 
@@ -13,7 +13,7 @@ export function Navbar({ onOpenSettings, onOpenMenu }: NavbarProps) {
 
   return (
     <div className="w-full border-b dark:border-neutral-800 px-4 py-3 flex items-center justify-between flex-shrink-0">
-      {/* Left: hamburger (mobile) + logo */}
+      {/* Left: hamburger */}
       <div className="flex items-center gap-3">
         <button
           onClick={onOpenMenu}
@@ -57,7 +57,7 @@ export function Navbar({ onOpenSettings, onOpenMenu }: NavbarProps) {
         </button>
 
         <button className="hidden md:flex items-center gap-2 ml-2 px-4 py-2 rounded-lg text-white bg-green-700 hover:bg-green-800 text-sm font-medium transition-colors">
-          Support Us 🤍
+          Support Us <Heart size={20} />
         </button>
       </div>
     </div>
