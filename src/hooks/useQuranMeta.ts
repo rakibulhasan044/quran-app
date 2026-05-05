@@ -1,20 +1,19 @@
-// hooks/useQuranMeta.ts
 "use client";
 import { useState, useEffect } from "react";
 
 export interface Chapter {
   id: number;
-  name_simple: string;        // "Al-Fatihah"
-  translated_name: { name: string }; // "The Opener"
-  name_arabic: string;        // "الفاتحة"
+  name_simple: string;       
+  translated_name: { name: string }; 
+  name_arabic: string;        
   verses_count: number;
-  revelation_place: string;   // "makkah" | "madinah"
+  revelation_place: string; 
 }
 
 export interface Juz {
   id: number;
   juz_number: number;
-  verse_mapping: Record<string, string>; // { "1": "1-7", "2": "1-141" }
+  verse_mapping: Record<string, string>;
   first_verse_id: number;
   last_verse_id: number;
   verses_count: number;

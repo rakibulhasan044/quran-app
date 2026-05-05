@@ -13,7 +13,6 @@ function getInitialTheme() {
 export function useDarkMode() {
   const [dark, setDark] = useState(getInitialTheme);
 
-  // Only sync DOM (no setState here)
   useLayoutEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);

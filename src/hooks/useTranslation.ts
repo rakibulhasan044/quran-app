@@ -1,4 +1,3 @@
-// hooks/useTranslation.ts
 "use client";
 import { useState, useEffect } from "react";
 
@@ -21,9 +20,9 @@ useEffect(() => {
   fetch(`/api/quran/translation/surah/${surahId}`)
     .then((r) => r.json())
     .then((d) => {
-      console.log("📦 API RAW RESPONSE:", d); // 👈 full response
+      console.log("📦 API RAW RESPONSE:", d); 
 
-      console.log("📖 VERSES:", d.verses); // 👈 verses only
+      console.log("📖 VERSES:", d.verses); 
 
       // Optional: log each ayah
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

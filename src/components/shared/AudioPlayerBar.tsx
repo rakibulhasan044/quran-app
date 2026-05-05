@@ -1,6 +1,6 @@
 "use client";
 import { useAudio } from "@/context/AudioContext";
-import { Play, Pause, Square, SkipBack, SkipForward, X } from "lucide-react";
+import { Play, Pause, SkipBack, SkipForward, X } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 
 function fmt(s: number) {
@@ -27,12 +27,11 @@ export function AudioPlayerBar() {
 
   return (
     <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-white dark:bg-neutral-900 border dark:border-neutral-800 shadow-2xl px-5 py-3 flex items-center gap-4 w-[90%] max-w-xl rounded-xl">
-      {/* Label */}
+
       <span className="text-sm font-medium text-gray-700 dark:text-gray-300 w-36 truncate flex-shrink-0">
         {currentLabel}
       </span>
 
-      {/* Controls (centered) */}
       <div className="flex items-center gap-4 mx-auto">
         <button className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 cursor-pointer">
           <SkipBack className="w-5 h-5 text-gray-600 dark:text-gray-400" />
@@ -71,17 +70,9 @@ export function AudioPlayerBar() {
           {fmt(duration)}
         </span>
       </div>
-
-      {/* Stop & Close */}
       <div className="flex items-center gap-2 flex-shrink-0">
         <button
-          onClick={stop}
-          className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 cursor-pointer"
-        >
-          <Square className="w-4 h-4 text-gray-500" />
-        </button>
-        <button
-          onClick={stop} // You can replace this with a "remove player" function if needed
+          onClick={stop} 
           className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 cursor-pointer"
         >
           <X className="w-4 h-4 text-gray-500" />

@@ -1,4 +1,3 @@
-// hooks/useQuranData.ts
 "use client";
 import { useState, useEffect } from "react";
 import type { Verse, QuranResponse } from "@/types/quran";
@@ -32,7 +31,7 @@ export function useQuranData(mode: Mode, id: number) {
         return r.json();
       })
       .then((data: QuranResponse & { error?: string }) => {
-        console.log("QURAN API SAMPLE VERSE:", data.verses);
+        // console.log("QURAN API SAMPLE VERSE:", data.verses);
         if (data.error) throw new Error(data.error);
         if (!data.verses || data.verses.length === 0) throw new Error("No verses returned");
         setVerses(data.verses);

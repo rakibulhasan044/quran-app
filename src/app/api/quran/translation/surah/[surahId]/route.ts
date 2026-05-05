@@ -1,4 +1,3 @@
-// src/app/api/quran/translation/surah/[surahId]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
 interface Verse {

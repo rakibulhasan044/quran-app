@@ -1,4 +1,3 @@
-// components/modules/Chapter/JuzList.tsx
 "use client";
 import { useState } from "react";
 import { Search, ChevronDown, ChevronUp } from "lucide-react";
@@ -7,7 +6,7 @@ import { useJuzs, useChapters } from "@/hooks/useQuranMeta";
 interface JuzListProps {
   selected: number;
   onSelect: (id: number) => void;
-  onScrollToSurah?: (surahId: number) => void; // scrolls reading panel, stays in Juz
+  onScrollToSurah?: (surahId: number) => void;
 }
 
 export function JuzList({ selected, onSelect, onScrollToSurah }: JuzListProps) {
@@ -74,19 +73,19 @@ export function JuzList({ selected, onSelect, onScrollToSurah }: JuzListProps) {
 
           return (
             <div key={j.juz_number} className="flex flex-col">
+              {/* Juz button */}
               <button
                 onClick={() => {
                   onSelect(j.juz_number);
                   setExpandedJuz(isExpanded ? null : j.juz_number);
                 }}
                 className={`group flex items-center gap-3 px-3 py-3 rounded-xl text-left transition-all cursor-pointer w-full border
-                  ${
-                    isSelected
-                      ? "bg-[#F4F7F3] dark:bg-[#121810] border-[#C5D5C2] dark:border-[#2a3d27]"
-                      : "border-slate-100 dark:border-neutral-800 hover:bg-[#F4F7F3] dark:hover:bg-[#121810] hover:border-[#C5D5C2] dark:hover:border-[#2a3d27]"
-                  }`}
+          ${
+            isSelected
+              ? "bg-[#F4F7F3] dark:bg-[#121810] border-[#C5D5C2] dark:border-[#2a3d27]"
+              : "border-slate-100 dark:border-neutral-800 hover:bg-[#F4F7F3] dark:hover:bg-[#121810] hover:border-[#C5D5C2] dark:hover:border-[#2a3d27]"
+          }`}
               >
-
                 <div className="flex-1 min-w-0">
                   <p
                     className={`text-sm font-semibold ${isSelected ? "text-[#428039] dark:text-green-400" : "text-gray-800 dark:text-gray-200"}`}
@@ -97,7 +96,6 @@ export function JuzList({ selected, onSelect, onScrollToSurah }: JuzListProps) {
                     {getFirstSurahName(j.verse_mapping)}
                   </p>
                 </div>
-
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <span className="text-xs text-gray-400">
                     {surahsInJuz.length} Surah
@@ -110,23 +108,23 @@ export function JuzList({ selected, onSelect, onScrollToSurah }: JuzListProps) {
                 </div>
               </button>
 
-              {/* Surah dropdown — stays in Juz, scrolls reading panel */}
-
-              {isExpanded && surahsInJuz.length > 1 && (
+              {/* Surah list*/}
+              {isExpanded && surahsInJuz.length > 0 && (
                 <div className="mt-1 mb-1 flex flex-col gap-0.5">
                   {surahsInJuz.map((surah) => (
                     <button
                       key={surah.id}
+                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        onSelect(j.juz_number); // keep the juz selected in the list
-                        onScrollToSurah?.(surah.id); // this now also sets mode + selectedSurah
+                        e.preventDefault();
+                        onSelect(j.juz_number);
+                        onScrollToSurah?.(surah.id);
                       }}
                       className="group flex items-center gap-3 px-3 py-3 rounded-xl text-left transition-all cursor-pointer w-full border border-slate-100 dark:border-neutral-800 hover:bg-[#F4F7F3] dark:hover:bg-[#121810] hover:border-[#C5D5C2] dark:hover:border-[#2a3d27]"
                     >
-                      {/* diamond */}
                       <div
-                        className="w-8 h-8 flex items-center justify-center flex-shrink-0 transition-colors bg-slate-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-300 group-hover:bg-[#428039] group-hover:text-white dark:group-hover:bg-[#428039] dark:group-hover:text-white"
+                        className="w-8 h-8 flex items-center justify-center flex-shrink-0 transition-colors bg-slate-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-300 group-hover:bg-[#428039] group-hover:text-white"
                         style={{
                           borderRadius: "6px",
                           transform: "rotate(45deg)",
@@ -147,6 +145,12 @@ export function JuzList({ selected, onSelect, onScrollToSurah }: JuzListProps) {
                           {surah.translation}
                         </p>
                       </div>
+                      <span
+                        className="text-sm text-[#7A8B85] flex-shrink-0 font-semibold"
+                        dir="rtl"
+                      >
+                        {surah.arabic}
+                      </span>
                     </button>
                   ))}
                 </div>

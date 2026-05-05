@@ -1,4 +1,3 @@
-// components/modules/Chapter/PageList.tsx
 "use client";
 import { useState, useMemo } from "react";
 import { Search } from "lucide-react";
@@ -44,7 +43,6 @@ export function PageList({ selected, onSelect }: PageListProps) {
                   : "border-slate-100 dark:border-neutral-800 hover:bg-[#F4F7F3] dark:hover:bg-[#121810] hover:border-[#C5D5C2] dark:hover:border-[#2a3d27]"
               }`}
           >
-            {/* Diamond badge */}
             <div
               className={`w-8 h-8 flex items-center justify-center flex-shrink-0 transition-colors
                 ${
