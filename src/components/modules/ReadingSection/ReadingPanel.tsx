@@ -120,7 +120,7 @@ export function ReadingPanel({
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="flex flex-col items-center gap-2 px-8 py-8">
           {loading && (
             <div className="flex items-center justify-center py-20">
